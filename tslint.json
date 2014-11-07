@@ -1,0 +1,52 @@
+{
+  "rules": {
+    "class-name": true,
+    "comment-format": [true,
+      "check-space"
+    ],
+    "curly": true,
+    "eofline": true,
+    "forin": true,
+    "interface-name": true,
+    "jsdoc-format": true,
+    "no-construct": true,
+    "no-constructor-vars": true,
+    "no-duplicate-variable": true,
+    "no-trailing-whitespace": true,
+    "no-unreachable": true,
+    "no-unused-expression": true,
+    "no-unused-variable": true,
+    "variable-name": [true,
+      "allow-leading-underscore"
+    ],
+    "one-line": [true,
+      "check-catch",
+      "check-else",
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "radix": true,
+    "semicolon": true,
+    "typedef": [true,
+      "indexSignature",
+      "parameter",
+      "propertySignature",
+      "memberVariableDeclarator"
+    ],
+    "typedef-whitespace": [true,
+      ["callSignature", "space"],
+      ["catchClause", "space"],
+      ["indexSignature", "space"]
+    ],
+    "whitespace": [true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type",
+      "check-typecast"
+    ],
+    "use-strict": true,
+    "triple-equals": true
+  }
+}

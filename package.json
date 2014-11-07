@@ -1,0 +1,30 @@
+{
+  "name": "doppio-jcl",
+  "version": "0.0.1",
+  "engine": "node >= 0.10.0",
+  "devDependencies": {
+    "ar": "*",
+    "tar": "*",
+    "request": "*",
+    "npm": "*",
+    "rimraf": "*",
+    "typescript": "1.0",
+    "bower": "*",
+    "grunt": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-coffee": "*",
+    "grunt-curl": "*",
+    "glob": "*",
+    "execSync": "*",
+    "fstream": "*",
+    "grunt-lineending": "*",
+    "ncp": "~0.6",
+    "async": "*",
+    "adm-zip": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/plasma-umass/doppio_jcl.git"
+  }
+}
