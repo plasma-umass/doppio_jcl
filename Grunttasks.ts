@@ -1,7 +1,6 @@
 /// <reference path="bower_components/DefinitelyTyped/node/node.d.ts" />
 /// <reference path="bower_components/DefinitelyTyped/gruntjs/gruntjs.d.ts" />
 import path = require('path');
-import fs = require('fs');
 import os = require('os');
 import url = require('url');
 var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-6/",

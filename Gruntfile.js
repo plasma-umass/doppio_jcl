@@ -1,5 +1,4 @@
 /**
- * Grunt build file for Doppio.
  * Bootstraps ourselves from JavaScript into TypeScript.
  */
 var Grunttasks, glob = require('glob'), ts_files = [], ts_files_to_compile = [],
