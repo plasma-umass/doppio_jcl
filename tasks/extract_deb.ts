@@ -57,8 +57,9 @@ function extractDeb(grunt: IGrunt) {
           }
           cb();
         });
+      } else {
+        setImmediate(cb);
       }
-      setImmediate(cb);
     }
   });
 }

@@ -1,8 +1,5 @@
 /// <reference path="bower_components/DefinitelyTyped/node/node.d.ts" />
 /// <reference path="bower_components/DefinitelyTyped/gruntjs/gruntjs.d.ts" />
-/**
- * Contains all of doppio's grunt build tasks in TypeScript.
- */
 import path = require('path');
 import fs = require('fs');
 import os = require('os');
@@ -51,11 +48,6 @@ export function setup(grunt: IGrunt) {
       java_home_dir: '<%= resolve(build.git_dir, "java_home") %>',
       jcl_dir: '<%= resolve(build.java_home_dir, "classes") %>',
       scratch_dir: path.resolve(os.tmpDir(), "jdk-download" + Math.floor(Math.random() * 100000))
-    },
-    make_build_dir: {
-      options: { build_dir: "<%= build.java_home_dir %>" },
-      // It's a multi-task, so you need a default target.
-      default: {}
     },
     // Downloads files.
     'curl-dir': {
@@ -126,51 +118,44 @@ export function setup(grunt: IGrunt) {
       files: {
         src: ['Grunttasks.ts', 'tasks/*.ts']
       }
+    },
+    clean: {
+      java_home: {
+        // Remove unneeded JAR files that we have already extracted.
+        src: ['java_home/**/+(rt|tools|resources|rhino|jsse).jar']
+      },
+      project: {
+        src: ['java_home']
+      }
+    },
+    compress: {
+      java_home: {
+        options: {
+          archive: 'java_home.tar.gz'
+        },
+        files: [
+          { src: ['java_home/**'], dest: '' }
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-curl');
   grunt.loadNpmTasks('grunt-tslint');
   // Load our custom tasks.
   grunt.loadTasks('tasks');
 
-  grunt.registerTask('default', "Sets up doppio's environment prior to building.", function() {
-    var needJCL: boolean, needECJ: boolean, needJazzLib: boolean,
-      needJavaHome: boolean, tasks: string[] = [];
-    needJCL = !fs.existsSync('java_home/classes/java/lang/Object.class');
-    needECJ = !fs.existsSync('java_home/classes/org/eclipse/jdt/internal/compiler/batch/Main.class');
-    needJazzLib = !fs.existsSync('java_home/classes/java/util/zip/DeflaterEngine.class');
-    // Check for java_home *AND* time zone data.
-    needJavaHome = !(fs.existsSync('java_home/lib/zi/ZoneInfoMappings'));
-    if (needJCL || needECJ || needJazzLib || needJavaHome) {
-      // Create download folder. It shouldn't exist, as it is randomly generated.
-      fs.mkdirSync(grunt.config('build.scratch_dir'));
-      // Schedule download task.
-      tasks.push('curl-dir');
-    }
-    if (needJCL || needJavaHome) {
-      tasks.push('extract_deb');
-    }
-    if (needJCL) {
-      tasks.push('unzip:jcl');
-    }
-    if (needECJ) {
-      tasks.push('unzip:ecj');
-    }
-    if (needJazzLib) {
-      tasks.push('unzip:jazzlib');
-      tasks.push('copy:jazzlib');
-    }
-    if (needJavaHome) {
-      tasks.push('copy:java_home');
-    }
-    grunt.task.run(tasks);
+  grunt.registerTask('make_dirs', 'Creates needed directories.', function () {
+    grunt.file.mkdir(grunt.config('build.scratch_dir'));
+    grunt.file.mkdir(grunt.config('build.java_home_dir'));
   });
 
-  grunt.registerTask('clean', 'Deletes built files.', function () {
-    grunt.file.delete('java_home');
-  });
+  grunt.registerTask('default', ['make_dirs', 'curl-dir', 'extract_deb',
+    'unzip:jcl', 'unzip:ecj', 'unzip:jazzlib', 'copy:jazzlib', 'copy:java_home',
+    'clean:java_home', 'compress:java_home', 'clean:project']);
 
   grunt.registerTask('lint', ['tslint']);
 };

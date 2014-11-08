@@ -13,4 +13,5 @@ npm install
 bower install
 ```
 
-Then, run `grunt` to generate the contents of `java_home`.
+Then, run `grunt` to generate `java_home.tar.gz`, which can be extracted to
+`vendor/java_home` in a doppio folder.
