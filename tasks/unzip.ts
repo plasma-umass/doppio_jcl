@@ -1,6 +1,6 @@
 /// <reference path="../bower_components/DefinitelyTyped/node/node.d.ts" />
 /// <reference path="../bower_components/DefinitelyTyped/gruntjs/gruntjs.d.ts" />
-/// <reference path="../adm-zip.d.ts" />
+/// <reference path="../bower_components/DefinitelyTyped/adm-zip/adm-zip.d.ts" />
 import path = require('path');
 import AdmZip = require('adm-zip');
 

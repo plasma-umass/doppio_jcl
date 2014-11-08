@@ -72,7 +72,7 @@ export function setup(grunt: IGrunt) {
       jcl: {
         files: [{
           expand: true,
-          src: "<%= resolve(build.scratch_dir, '**/+(rt|tools|resources|rhino|jsse).jar') %>"
+          src: "<%= resolve(build.scratch_dir, '**/java-6-openjdk-i386/**/+(rt|tools|resources|rhino|jsse).jar') %>"
         }]
       },
       ecj: {
@@ -118,11 +118,20 @@ export function setup(grunt: IGrunt) {
           dest: "<%= build.java_home_dir %>"
         }]
       }
+    },
+    tslint: {
+      options: {
+        configuration: grunt.file.readJSON("tslint.json")
+      },
+      files: {
+        src: ['Grunttasks.ts', 'tasks/*.ts']
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-curl');
+  grunt.loadNpmTasks('grunt-tslint');
   // Load our custom tasks.
   grunt.loadTasks('tasks');
 
@@ -162,4 +171,6 @@ export function setup(grunt: IGrunt) {
   grunt.registerTask('clean', 'Deletes built files.', function () {
     grunt.file.delete('java_home');
   });
+
+  grunt.registerTask('lint', ['tslint']);
 };

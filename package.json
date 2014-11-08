@@ -15,6 +15,7 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-coffee": "*",
     "grunt-curl": "*",
+    "grunt-tslint": "*",
     "glob": "*",
     "execSync": "*",
     "fstream": "*",
