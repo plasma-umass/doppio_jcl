@@ -3,11 +3,11 @@
 import path = require('path');
 import os = require('os');
 import url = require('url');
-var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-6/",
+var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/openjdk-8/",
     DEBS: string[] = [
-        "openjdk-6-jdk_6b33-1.13.5-1ubuntu0.12.04_i386.deb",
-        "openjdk-6-jre-headless_6b33-1.13.5-1ubuntu0.12.04_i386.deb",
-        "openjdk-6-jre-lib_6b33-1.13.5-1ubuntu0.12.04_all.deb"
+        "openjdk-8-jdk_8u40~b09-1_i386.deb",
+        "openjdk-8-jre-headless_8u40~b09-1_i386.deb",
+        "openjdk-8-jre_8u40~b09-1_i386.deb"
     ],
     TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2014e-0ubuntu0.13.10_all.deb",
     ECJ_URL: string = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.7.1-201109091335/ecj-3.7.1.jar",
@@ -63,7 +63,7 @@ export function setup(grunt: IGrunt) {
       jcl: {
         files: [{
           expand: true,
-          src: "<%= resolve(build.scratch_dir, '**/java-6-openjdk-i386/**/+(rt|tools|resources|rhino|jsse).jar') %>"
+          src: "<%= resolve(build.scratch_dir, '**/java-8-openjdk-i386/**/+(rt|tools|resources|rhino|jsse).jar') %>"
         }]
       },
       ecj: {
@@ -104,7 +104,7 @@ export function setup(grunt: IGrunt) {
         files: [{
           expand: true,
           flatten: false,
-          cwd: "<%= resolve(build.scratch_dir, 'usr', 'lib', 'jvm', 'java-6-openjdk-i386', 'jre') %>",
+          cwd: "<%= resolve(build.scratch_dir, 'usr', 'lib', 'jvm', 'java-8-openjdk-i386', 'jre') %>",
           src: "**/*",
           dest: "<%= build.java_home_dir %>"
         }]

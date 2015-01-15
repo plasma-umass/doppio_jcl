@@ -24,6 +24,7 @@
     "request": "*",
     "rimraf": "*",
     "tar": "*",
+    "xz": "*",
     "typescript": "1.0"
   },
   "repository": {

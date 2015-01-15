@@ -10,6 +10,7 @@ import async = require('async');
 import _ncp = require('ncp');
 import tar = require('tar');
 var ar = require('ar'),
+  xz = require('xz'),
   // Maps symlink paths to the link's destination.
   foundSymlinks: { [path: string]: string } = {},
   ncp = _ncp.ncp;
@@ -54,6 +55,8 @@ function extractDeb(grunt: IGrunt) {
         ncp(destPath, linkPath, (err2?: any): void => {
           if (err2) {
             grunt.log.writeln('Warning: broken symlink.\n\tLink: ' + linkPath + '\n\tDest: ' + destPath);
+            // Delete the broken symlink.
+            fs.unlinkSync(linkPath);
           }
           cb();
         });
@@ -90,16 +93,20 @@ function extractData(grunt: IGrunt, archiveFile: {src: string[]; dest: string}, 
   }
   function streamFinishCb(err: any): void {
     // Close the stream before passing the callback.
-    // XXX: DefinitelyTyped's node.d.ts doesn't have a 'close' defined.
-    (<any> stream).close();
+    if (stream['close']) {
+      stream.close();
+    }
     cb(err);
   }
-  function extractTarFile(data: Buffer): void {
+  function extractTarFileFromBuffer(data: Buffer): void {
     // Write the tar file to disc so we can create a read stream for it.
     // There's no built-in way to create a stream from a buffer in Node.
     fs.writeFileSync(tarFile, data);
     // Extract the tar file.
     stream = fs.createReadStream(tarFile);
+    extractTarFile();
+  }
+  function extractTarFile() {
     stream.pipe(tar.Extract({ path: destDir })).on("entry", entryCb).on("error", streamFinishCb).on("end", streamFinishCb);
   }
 
@@ -109,28 +116,31 @@ function extractData(grunt: IGrunt, archiveFile: {src: string[]; dest: string}, 
   }
   grunt.log.writeln('Processing file ' + path.basename(archiveFile.src[0]) + '...');
 
-  // Iterate through the files to find data.tar.gz.
+  // Iterate through the files to find data.tar.(gz|xz).
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     if (file.name() === 'data.tar.gz') {
+      // Decompress the file: Gunzip
+      zlib.gunzip(file.fileData(), function (err: Error, buff: Buffer) {
+        if (err) {
+          cb(err);
+        } else {
+          extractTarFileFromBuffer(buff);
+        }
+      });
+      // Break the loop; we have found what we needed.
       found = true;
       break;
     } else if (file.name() === 'data.tar.xz') {
-      grunt.fatal("Debian archive uses the tar.xz file format, which we do not support.");
+      stream = new xz.Decompressor();
+      (<NodeJS.WritableStream><any> stream).end(file.fileData());
+      extractTarFile();
+      found = true;
       break;
     }
   }
 
-  if (found) {
-    // Decompress the file: Gunzip
-    zlib.gunzip(file.fileData(), function (err: Error, buff: Buffer) {
-      if (err) {
-        cb(err);
-      } else {
-        extractTarFile(buff);
-      }
-    });
-  } else {
+  if (!found) {
     cb(new Error("Could not find data.tar.gz in " + archiveFile.src[0] + "."));
   }
 }
