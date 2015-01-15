@@ -32,6 +32,7 @@ public class JarLauncher {
           ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
           Class<?> mainCls = Class.forName(mainClassName, true, systemClassLoader);
           Method mainMethod = mainCls.getMethod("main", new Class[] { String[].class });
+          mainMethod.invoke(null, new Object[]{ args });
         }
       }
     } catch (Throwable t) {
