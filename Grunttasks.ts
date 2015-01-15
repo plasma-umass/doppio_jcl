@@ -10,7 +10,6 @@ var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/ope
         "openjdk-8-jre_8u40~b09-1_i386.deb"
     ],
     TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2014e-0ubuntu0.13.10_all.deb",
-    ECJ_URL: string = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.7.1-201109091335/ecj-3.7.1.jar",
     JAZZLIB_URL: string = "http://downloads.sourceforge.net/project/jazzlib/jazzlib/0.07/jazzlib-binary-0.07-juz.zip",
     DOWNLOAD_URLS: string[] = [];
 
@@ -19,7 +18,6 @@ DEBS.forEach(function(e: string) {
   DOWNLOAD_URLS.push(DEBS_DOMAIN + e);
 });
 DOWNLOAD_URLS.push(TZDATA_DEB);
-DOWNLOAD_URLS.push(ECJ_URL);
 DOWNLOAD_URLS.push(JAZZLIB_URL);
 
 export function setup(grunt: IGrunt) {
@@ -46,7 +44,10 @@ export function setup(grunt: IGrunt) {
       git_dir: __dirname, // Root directory for doppio (same as this file)
       java_home_dir: '<%= resolve(build.git_dir, "java_home") %>',
       jcl_dir: '<%= resolve(build.java_home_dir, "classes") %>',
-      scratch_dir: path.resolve(os.tmpDir(), "jdk-download" + Math.floor(Math.random() * 100000))
+      scratch_dir: path.resolve(os.tmpDir(), "jdk-download" + Math.floor(Math.random() * 100000)),
+      java: '',
+      javac: '',
+      javap: ''
     },
     // Downloads files.
     'curl-dir': {
@@ -108,6 +109,15 @@ export function setup(grunt: IGrunt) {
           src: "**/*",
           dest: "<%= build.java_home_dir %>"
         }]
+      },
+      doppio_classes: {
+        files: [{
+          expand: true,
+          flatten: false,
+          cwd: "doppio_classes",
+          src: "**/*.class",
+          dest: "<%= build.jcl_dir %>"
+        }]
       }
     },
     tslint: {
@@ -136,6 +146,14 @@ export function setup(grunt: IGrunt) {
           { src: ['java_home/**'], dest: '' }
         ]
       }
+    },
+    javac: {
+      doppio_classes: {
+        files: [{
+          expand: true,
+          src: 'doppio_classes/**/*.java'
+        }]
+      }
     }
   });
 
@@ -147,13 +165,13 @@ export function setup(grunt: IGrunt) {
   // Load our custom tasks.
   grunt.loadTasks('tasks');
 
-  grunt.registerTask('make_dirs', 'Creates needed directories.', function () {
+  grunt.registerTask('make_dirs', 'Creates needed directories.', () => {
     grunt.file.mkdir(grunt.config('build.scratch_dir'));
     grunt.file.mkdir(grunt.config('build.java_home_dir'));
   });
 
-  grunt.registerTask('default', ['make_dirs', 'curl-dir', 'extract_deb',
-    'unzip:jcl', 'unzip:ecj', 'unzip:jazzlib', 'copy:jazzlib', 'copy:java_home',
+  grunt.registerTask('default', ['make_dirs', 'find_native_java', 'javac:doppio_classes', 'curl-dir', 'extract_deb',
+    'unzip:jcl', 'unzip:jazzlib', 'copy:jazzlib', 'copy:java_home', 'copy:doppio_classes',
     'clean:java_home', 'compress:java_home', 'clean:project']);
 
   grunt.registerTask('lint', ['tslint']);

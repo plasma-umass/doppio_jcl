@@ -25,7 +25,8 @@
     "rimraf": "*",
     "tar": "*",
     "xz": "*",
-    "typescript": "1.0"
+    "typescript": "1.3",
+    "semver": "*"
   },
   "repository": {
     "type": "git",
