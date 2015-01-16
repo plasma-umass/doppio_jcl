@@ -15,29 +15,24 @@ public class JarLauncher {
    * Main function of the application, invoked with all of the regular
    * command line arguments. We forward them to the JAR file.
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Throwable {
     String cp = System.getProperty("java.class.path", null);
-    try {
-      JarFile mainJar = new JarFile(cp);
-      Manifest manifest = mainJar.getManifest();
+    JarFile mainJar = new JarFile(cp);
+    Manifest manifest = mainJar.getManifest();
 
-      if (manifest == null) {
-        System.err.println("JAR file is missing manifest; cannot start JVM.");
+    if (manifest == null) {
+      System.err.println("JAR file is missing manifest; cannot start JVM.");
+    } else {
+      String mainClassName = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+      if (mainClassName == null) {
+        System.err.println("JAR file manifest does not specify a main class; cannot start JVM.");
       } else {
-        String mainClassName = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
-        if (mainClassName == null) {
-          System.err.println("JAR file manifest does not specify a main class; cannot start JVM.");
-        } else {
-          // Fetch the main class using the system's class loader.
-          ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-          Class<?> mainCls = Class.forName(mainClassName, true, systemClassLoader);
-          Method mainMethod = mainCls.getMethod("main", new Class[] { String[].class });
-          mainMethod.invoke(null, new Object[]{ args });
-        }
+        // Fetch the main class using the system's class loader.
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        Class<?> mainCls = Class.forName(mainClassName, true, systemClassLoader);
+        Method mainMethod = mainCls.getMethod("main", new Class[] { String[].class });
+        mainMethod.invoke(null, new Object[]{ args });
       }
-    } catch (Throwable t) {
-      System.err.println("Unable to start JVM: " + t);
-      t.printStackTrace();
     }
   }
 }
