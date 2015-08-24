@@ -1,13 +1,13 @@
 {
   "name": "doppio-jcl",
   "version": "0.0.1",
-  "engine": "node >= 0.10.0",
+  "engine": "node >= 0.12.0",
+  "license": "MIT",
   "devDependencies": {
     "adm-zip": "*",
     "ar": "*",
     "async": "*",
     "bower": "*",
-    "execSync": "*",
     "fstream": "*",
     "glob": "*",
     "grunt": "*",
@@ -23,10 +23,11 @@
     "npm": "*",
     "request": "*",
     "rimraf": "*",
+    "semver": "*",
     "tar": "*",
-    "xz": "*",
-    "typescript": "1.3",
-    "semver": "*"
+    "tslint": "^2.4.3",
+    "typescript": "1.5",
+    "xz": "*"
   },
   "repository": {
     "type": "git",

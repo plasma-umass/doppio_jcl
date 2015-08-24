@@ -2,7 +2,7 @@
  * Bootstraps ourselves from JavaScript into TypeScript.
  */
 var Grunttasks, glob = require('glob'), ts_files = [], ts_files_to_compile = [],
-    execSync = require('execSync'),
+    child_process = require('child_process'),
     fs = require('fs'),
     path = require('path'),
     ts_path = path.resolve('node_modules', '.bin', 'tsc'),
@@ -31,8 +31,8 @@ ts_files.forEach(function(e, i) {
 });
 
 // Run!
-result = execSync.exec(ts_path + ' --noImplicitAny --module commonjs ' + ts_files_to_compile.join(' '));
-if (result.code !== 0) {
+result = child_process.spawnSync(ts_path, ['--noImplicitAny', '--module', 'commonjs'].concat(ts_files_to_compile));
+if (result.status !== 0) {
   throw new Error("Compilation error: " + result.stdout + "\n" + result.stderr);
 }
 

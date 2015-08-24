@@ -5,11 +5,11 @@ import os = require('os');
 import url = require('url');
 var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/openjdk-8/",
     DEBS: string[] = [
-        "openjdk-8-jdk_8u40~b09-1_i386.deb",
-        "openjdk-8-jre-headless_8u40~b09-1_i386.deb",
-        "openjdk-8-jre_8u40~b09-1_i386.deb"
+        "openjdk-8-jdk_8u66-b01-1_i386.deb",
+        "openjdk-8-jre-headless_8u66-b01-1_i386.deb",
+        "openjdk-8-jre_8u66-b01-1_i386.deb"
     ],
-    TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2014e-0ubuntu0.13.10_all.deb",
+    TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2015f-0ubuntu0.15.04_all.deb",
     JAZZLIB_URL: string = "http://downloads.sourceforge.net/project/jazzlib/jazzlib/0.07/jazzlib-binary-0.07-juz.zip",
     DOWNLOAD_URLS: string[] = [];
 
@@ -44,7 +44,7 @@ export function setup(grunt: IGrunt) {
       git_dir: __dirname, // Root directory for doppio (same as this file)
       java_home_dir: '<%= resolve(build.git_dir, "java_home") %>',
       jcl_dir: '<%= resolve(build.java_home_dir, "classes") %>',
-      scratch_dir: path.resolve(os.tmpDir(), "jdk-download" + Math.floor(Math.random() * 100000)),
+      scratch_dir: path.resolve(os.tmpdir(), "jdk-download" + Math.floor(Math.random() * 100000)),
       java: '',
       javac: '',
       javap: ''
@@ -131,7 +131,7 @@ export function setup(grunt: IGrunt) {
     clean: {
       java_home: {
         // Remove unneeded JAR files that we have already extracted.
-        src: ['java_home/**/+(rt|tools|resources|rhino|jsse).jar']
+        src: ['java_home/**/+(rt|tools|resources|rhino|jsse).jar', 'java_home/**/*.so']
       },
       project: {
         src: ['java_home']

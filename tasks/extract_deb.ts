@@ -18,7 +18,7 @@ var ar = require('ar'),
 function extractDeb(grunt: IGrunt) {
   grunt.registerMultiTask('extract_deb', 'Extracts the contents of the given Debian package.', function() {
     var files: {src: string[]; dest: string}[] = this.files,
-        i: number, tasks: Function[] = [],
+        i: number, tasks: ((err?: any) => void)[] = [],
         done: (status?: boolean) => void = this.async(),
         options = this.options();
     for (i = 0; i < files.length; i++) {
