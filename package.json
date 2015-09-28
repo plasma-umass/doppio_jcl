@@ -4,7 +4,6 @@
   "engine": "node >= 0.12.0",
   "license": "MIT",
   "devDependencies": {
-    "adm-zip": "*",
     "ar": "*",
     "async": "*",
     "bower": "*",
@@ -17,15 +16,12 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "*",
     "grunt-curl": "*",
-    "grunt-lineending": "*",
-    "grunt-tslint": "*",
     "ncp": "~0.6",
     "npm": "*",
     "request": "*",
     "rimraf": "*",
     "semver": "*",
     "tar": "*",
-    "tslint": "^2.4.3",
     "typescript": "1.5",
     "xz": "*"
   },

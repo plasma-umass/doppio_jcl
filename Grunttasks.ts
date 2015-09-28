@@ -5,9 +5,9 @@ import os = require('os');
 import url = require('url');
 var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/openjdk-8/",
     DEBS: string[] = [
-        "openjdk-8-jdk_8u66-b01-1_i386.deb",
-        "openjdk-8-jre-headless_8u66-b01-1_i386.deb",
-        "openjdk-8-jre_8u66-b01-1_i386.deb"
+        "openjdk-8-jdk_8u66-b01-4_i386.deb",
+        "openjdk-8-jre-headless_8u66-b01-4_i386.deb",
+        "openjdk-8-jre_8u66-b01-4_i386.deb"
     ],
     TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2015f-0ubuntu0.15.04_all.deb",
     JAZZLIB_URL: string = "http://downloads.sourceforge.net/project/jazzlib/jazzlib/0.07/jazzlib-binary-0.07-juz.zip",
@@ -56,29 +56,6 @@ export function setup(grunt: IGrunt) {
         dest: "<%= build.scratch_dir %>"
       }
     },
-    // Unzips files.
-    unzip: {
-      options: {
-        dest_dir: '<%= build.jcl_dir %>'
-      },
-      jcl: {
-        files: [{
-          expand: true,
-          src: "<%= resolve(build.scratch_dir, '**/java-8-openjdk-i386/**/+(rt|tools|resources|rhino|jsse).jar') %>"
-        }]
-      },
-      ecj: {
-        // We can't get the pathname from the URL, since it has an argument
-        // in it that contains the actual filename.
-        files: [{ expand: true, src: "<%= resolve(build.scratch_dir, 'ecj*.jar') %>" }]
-      },
-      jazzlib: {
-        options: {
-          dest_dir: "<%= resolve(build.scratch_dir, 'jazzlib') %>"
-        },
-        files: [{ src: "<%= resolve(build.scratch_dir, '" + path.basename(url.parse(JAZZLIB_URL).pathname) + "') %>" }]
-      }
-    },
     extract_deb: {
       default: {
         options: {
@@ -92,15 +69,6 @@ export function setup(grunt: IGrunt) {
       }
     },
     copy: {
-      jazzlib: {
-        // Patches Jazzlib.
-        files: [{
-          expand: true,
-          flatten: true,
-          src: "<%= resolve(build.scratch_dir, 'jazzlib/java/util/zip/*.class') %>",
-          dest: "<%= resolve(build.jcl_dir, 'java/util/zip') %>"
-        }]
-      },
       java_home: {
         files: [{
           expand: true,
@@ -118,20 +86,21 @@ export function setup(grunt: IGrunt) {
           src: "**/*.class",
           dest: "<%= build.jcl_dir %>"
         }]
-      }
-    },
-    tslint: {
-      options: {
-        configuration: grunt.file.readJSON("tslint.json")
       },
-      files: {
-        src: ['Grunttasks.ts', 'tasks/*.ts']
+      jazzlib_jar: {
+        options: {
+          dest_dir: "<%= resolve(build.scratch_dir, 'jazzlib') %>"
+        },
+        files: [{
+          src: "<%= resolve(build.scratch_dir, '" + path.basename(url.parse(JAZZLIB_URL).pathname) + "') %>",
+          dest: "<%= resolve(build.java_home_dir, 'lib', 'jazzlib.jar') %>"
+        }]
       }
     },
     clean: {
       java_home: {
-        // Remove unneeded JAR files that we have already extracted.
-        src: ['java_home/**/+(rt|tools|resources|rhino|jsse).jar', 'java_home/**/*.so']
+        // Remove native files.
+        src: ['java_home/bin', 'java_home/man', 'java_home/lib/i386']
       },
       project: {
         src: ['java_home']
@@ -144,6 +113,16 @@ export function setup(grunt: IGrunt) {
         },
         files: [
           { src: ['java_home/**'], dest: '' }
+        ]
+      },
+      doppio: {
+        options: {
+          archive: 'java_home/lib/doppio.jar',
+          mode: 'zip',
+          level: 0
+        },
+        files: [
+          { expand: true, cwd: 'doppio_classes/', src: '**/*.class', dest: ''}
         ]
       }
     },
@@ -161,7 +140,6 @@ export function setup(grunt: IGrunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-curl');
-  grunt.loadNpmTasks('grunt-tslint');
   // Load our custom tasks.
   grunt.loadTasks('tasks');
 
@@ -170,9 +148,7 @@ export function setup(grunt: IGrunt) {
     grunt.file.mkdir(grunt.config('build.java_home_dir'));
   });
 
+  // Experimentally compress entire JCL into one JAR file.
   grunt.registerTask('default', ['make_dirs', 'find_native_java', 'javac:doppio_classes', 'curl-dir', 'extract_deb',
-    'unzip:jcl', 'unzip:jazzlib', 'copy:jazzlib', 'copy:java_home', 'copy:doppio_classes',
-    'clean:java_home', 'compress:java_home', 'clean:project']);
-
-  grunt.registerTask('lint', ['tslint']);
+    'copy:java_home', 'copy:jazzlib_jar', 'compress:doppio', 'clean:java_home', 'compress:java_home', 'clean:project']);
 };
