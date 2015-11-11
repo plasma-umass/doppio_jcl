@@ -1,6 +1,4 @@
-/// <reference path="../bower_components/DefinitelyTyped/node/node.d.ts" />
-/// <reference path="../bower_components/DefinitelyTyped/gruntjs/gruntjs.d.ts" />
-/// <reference path="../bower_components/DefinitelyTyped/async/async.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 import child_process = require('child_process');
 import os = require('os');
 import fs = require('fs');

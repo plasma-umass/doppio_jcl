@@ -1,4 +1,7 @@
 *.js
 node_modules
-bower_components
 java_home
+typings
+java_home.tar.gz
+*.class
+

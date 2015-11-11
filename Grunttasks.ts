@@ -1,15 +1,14 @@
-/// <reference path="bower_components/DefinitelyTyped/node/node.d.ts" />
-/// <reference path="bower_components/DefinitelyTyped/gruntjs/gruntjs.d.ts" />
+/// <reference path="typings/tsd.d.ts" />
 import path = require('path');
 import os = require('os');
 import url = require('url');
 var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/openjdk-8/",
     DEBS: string[] = [
-        "openjdk-8-jdk_8u66-b01-4_i386.deb",
-        "openjdk-8-jre-headless_8u66-b01-4_i386.deb",
-        "openjdk-8-jre_8u66-b01-4_i386.deb"
+        "openjdk-8-jdk_8u72-b05-1ubuntu1_i386.deb",
+        "openjdk-8-jre-headless_8u72-b05-1ubuntu1_i386.deb",
+        "openjdk-8-jre_8u72-b05-1ubuntu1_i386.deb"
     ],
-    TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2015f-0ubuntu0.15.04_all.deb",
+    TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2015g-0ubuntu0.15.04_all.deb",
     JAZZLIB_URL: string = "http://downloads.sourceforge.net/project/jazzlib/jazzlib/0.07/jazzlib-binary-0.07-juz.zip",
     DOWNLOAD_URLS: string[] = [];
 
@@ -76,6 +75,13 @@ export function setup(grunt: IGrunt) {
           cwd: "<%= resolve(build.scratch_dir, 'usr', 'lib', 'jvm', 'java-8-openjdk-i386', 'jre') %>",
           src: "**/*",
           dest: "<%= build.java_home_dir %>"
+        }, {
+          // JDK JAR files
+          expand: true,
+          flatten: false,
+          cwd: "<%= resolve(build.scratch_dir, 'usr', 'lib', 'jvm', 'java-8-openjdk-i386') %>",
+          src: "lib/**/*.jar",
+          dest: "<%= build.java_home_dir %>"
         }]
       },
       doppio_classes: {
@@ -133,6 +139,14 @@ export function setup(grunt: IGrunt) {
           src: 'doppio_classes/**/*.java'
         }]
       }
+    },
+    tsd: {
+      doppio: {
+        options: {
+          command: "reinstall",
+          config: "tsd.json"
+        }
+      }
     }
   });
 
@@ -140,6 +154,7 @@ export function setup(grunt: IGrunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-curl');
+  grunt.loadNpmTasks('grunt-tsd');
   // Load our custom tasks.
   grunt.loadTasks('tasks');
 
@@ -148,7 +163,6 @@ export function setup(grunt: IGrunt) {
     grunt.file.mkdir(grunt.config('build.java_home_dir'));
   });
 
-  // Experimentally compress entire JCL into one JAR file.
-  grunt.registerTask('default', ['make_dirs', 'find_native_java', 'javac:doppio_classes', 'curl-dir', 'extract_deb',
+  grunt.registerTask('default', ['tsd', 'make_dirs', 'find_native_java', 'javac:doppio_classes', 'curl-dir', 'extract_deb',
     'copy:java_home', 'copy:jazzlib_jar', 'compress:doppio', 'clean:java_home', 'compress:java_home', 'clean:project']);
 };

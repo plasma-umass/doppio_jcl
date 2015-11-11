@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "ES3",
+        "module": "commonjs"
+    },
+    "files": [
+        "Grunttasks.ts",
+        "tasks/extract_deb.ts",
+        "tasks/find_native_java.ts",
+        "tasks/java.ts"
+    ]
+}
