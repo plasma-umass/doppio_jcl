@@ -9,7 +9,6 @@ var DEBS_DOMAIN: string = "http://security.ubuntu.com/ubuntu/pool/universe/o/ope
         "openjdk-8-jre_8u72-b05-1ubuntu1_i386.deb"
     ],
     TZDATA_DEB: string = "http://security.ubuntu.com/ubuntu/pool/main/t/tzdata/tzdata-java_2015g-0ubuntu0.15.04_all.deb",
-    JAZZLIB_URL: string = "http://downloads.sourceforge.net/project/jazzlib/jazzlib/0.07/jazzlib-binary-0.07-juz.zip",
     DOWNLOAD_URLS: string[] = [];
 
 // Prepare DOWNLOAD_URLS prior to Grunt configuration.
@@ -17,7 +16,6 @@ DEBS.forEach(function(e: string) {
   DOWNLOAD_URLS.push(DEBS_DOMAIN + e);
 });
 DOWNLOAD_URLS.push(TZDATA_DEB);
-DOWNLOAD_URLS.push(JAZZLIB_URL);
 
 export function setup(grunt: IGrunt) {
   // Project configuration.
@@ -93,15 +91,6 @@ export function setup(grunt: IGrunt) {
           dest: "<%= build.jcl_dir %>"
         }]
       },
-      jazzlib_jar: {
-        options: {
-          dest_dir: "<%= resolve(build.scratch_dir, 'jazzlib') %>"
-        },
-        files: [{
-          src: "<%= resolve(build.scratch_dir, '" + path.basename(url.parse(JAZZLIB_URL).pathname) + "') %>",
-          dest: "<%= resolve(build.java_home_dir, 'lib', 'jazzlib.jar') %>"
-        }]
-      }
     },
     clean: {
       java_home: {
@@ -164,5 +153,5 @@ export function setup(grunt: IGrunt) {
   });
 
   grunt.registerTask('default', ['tsd', 'make_dirs', 'find_native_java', 'javac:doppio_classes', 'curl-dir', 'extract_deb',
-    'copy:java_home', 'copy:jazzlib_jar', 'compress:doppio', 'clean:java_home', 'compress:java_home', 'clean:project']);
+    'copy:java_home', 'compress:doppio', 'clean:java_home', 'compress:java_home', 'clean:project']);
 };
